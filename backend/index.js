@@ -30,8 +30,10 @@ app.use(express.json());
 app.use(cookieParser());
 
 // routes
-app.use("/auth", require("./routes/auth"));
-app.use("/users", require("./routes/users"));
+app.use("/auth", require("./routes/auth.routes"));
+app.use("/api/v1/users", require("./routes/api/v1/users.routes"));
+app.use("/api/v1/chats", require("./routes/api/v1/chats.routes"));
+app.use("/api/v1/messages", require("./routes/api/v1/messages.routes"));
 
 // global router catcher
 app.all("*", (req, res) => {
