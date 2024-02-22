@@ -6,7 +6,7 @@ export function Layout() {
     return (
         <>
             <Header></Header>
-            <main className="App bg-gray-300 border border-black h-[100vh] flex flex-row items-center justify-center">
+            <main className="App bg-gray-300  h-[100vh] flex flex-row items-center justify-center">
                 <Outlet />
             </main>
             <Footer></Footer>

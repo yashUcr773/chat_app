@@ -11,18 +11,19 @@ export const CONSTANTS = {
         LOGOUT: "/auth/signout"
     },
     USER: {
-        GET_ALL: "/ap1/v1/users",
-        GET_BY_ID: "/ap1/v1/users/"
+        GET_ALL: "/api/v1/users",
+        GET_BY_ID: (id: number) => { return `/api/v1/users/id/${id}` },
+        GET_BY_FILTER: (filter: string) => { return `/api/v1/users/filter?mask=${filter}` }
     },
     MESSAGE: {
-        GET_MESSAGES: "/ap1/v1/messages/",
-        CREATE_MESSAGE: "/ap1/v1/messages/create"
+        GET_MESSAGESOF_CHAT: (chatId: string) => { return `/api/v1/messages/${chatId}` },
+        CREATE_MESSAGE: "/api/v1/messages/create"
     },
     CHAT: {
-        CREATE_CHAT: "/ap1/v1/chats/create",
-        FIND_CHAT_USER: "/ap1/v1/user/chats/",
-        FIND_CHAT_BY_MEMBERS: "/ap1/v1/chats/",
-        FIND_CHAT_BY_ID: "/ap1/v1/chats/"
+        CREATE_CHAT: "/api/v1/chats/create",
+        FIND_CHAT_USER: (userId: string) => { return `/api/v1/chats/user/${userId}` },
+        FIND_CHAT_BY_MEMBERS: (mem1: string, mem2: string) => { return `/api/v1/chats/${mem1}/${mem2}` },
+        FIND_CHAT_BY_ID: (chatId: string) => { return `/api/v1/chats/${chatId}` }
     }
 }
 
@@ -32,6 +33,6 @@ export const customAxios = axios.create({
 
 export const customAxiosPrivate = axios.create({
     baseURL: CONSTANTS.APIBASEURL,
-    headers: { 'Content-Type': 'applications/json' },
+    headers: { 'Content-Type': 'application/json' },
     withCredentials: true
 })

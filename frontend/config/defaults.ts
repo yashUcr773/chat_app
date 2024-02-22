@@ -1,6 +1,8 @@
 import { defaultUserInterface } from "./types"
 
 export const defaultUser: defaultUserInterface = {
-    username: "",
+    firstname: "",
+    lastname: "",
+    email: "",
     userId: ""
 }
