@@ -91,6 +91,11 @@ const findChatByMembers = async (req, res) => {
             // if not found, create a new chat
             const newChat = await ChatsDB.create({
                 members: [sender, reciever],
+            })
+            const foundChat = await ChatsDB.findOne({
+                members: {
+                    $all: [sender, reciever],
+                },
             }).populate({
                 path: "members",
                 select: "firstname lastname _id",
@@ -99,7 +104,7 @@ const findChatByMembers = async (req, res) => {
             return res.status(200).json({
                 success: true,
                 message: "Chat Created",
-                chat: newChat,
+                chat: foundChat,
             });
         }
     } catch (e) {

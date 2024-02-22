@@ -38,6 +38,8 @@ export function ChatBox() {
         const response = await customAxios.post("http://localhost:3000" + CONSTANTS.MESSAGE.CREATE_MESSAGE, {
             message: text, chatId: chat._id, senderId: user?.userId
         })
+        console.log(response)
+        setText("")
     }
 
     return <div className="flex-grow h-full">
