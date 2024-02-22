@@ -10,6 +10,10 @@ const chatSchema = new Schema(
                 required: true,
             },
         ],
+        lastMessageId: {
+            type: Schema.Types.ObjectId,
+            ref: "Messages",
+        },
     },
     { timestamps: true }
 );

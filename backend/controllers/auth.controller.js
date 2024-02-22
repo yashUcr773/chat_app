@@ -33,7 +33,9 @@ const handleLogin = async (req, res) => {
         }
 
         // check if user exists in db
-        const foundUser = await UsersDB.findOne({ email: { $regex: new RegExp(email, 'i') } });
+        const foundUser = await UsersDB.findOne({
+            email: { $regex: new RegExp(email, "i") },
+        });
         if (!foundUser) {
             res.cookie("jwt", "", tokenCookieOptions);
             return res.status(401).json({
@@ -74,6 +76,8 @@ const handleLogin = async (req, res) => {
             user: {
                 userId: updatedUser._id,
                 email: updatedUser.email,
+                firstname: updatedUser.firstname,
+                lastname: updatedUser.lastname,
                 accessToken: accessToken,
             },
         });
@@ -172,7 +176,9 @@ const handleSignup = async (req, res) => {
         }
 
         // check for duplicate emails in the db
-        const duplicate = await UsersDB.findOne({ email: { $regex: new RegExp(email, 'i') } });
+        const duplicate = await UsersDB.findOne({
+            email: { $regex: new RegExp(email, "i") },
+        });
         if (duplicate) {
             return res
                 .status(409)
@@ -214,6 +220,8 @@ const handleSignup = async (req, res) => {
             user: {
                 userId: updatedUser._id,
                 email: updatedUser.email,
+                firstname: updatedUser.firstname,
+                lastname: updatedUser.lastname,
                 accessToken: accessToken,
             },
         });
@@ -271,6 +279,8 @@ const handleRefreshToken = async (req, res) => {
             newAccessToken,
             user: sendUserData && {
                 userId: foundUser._id,
+                firstname: foundUser.firstname,
+                lastname: foundUser.lastname,
                 email: foundUser.email,
             },
         });

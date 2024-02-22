@@ -10,7 +10,6 @@ const createChat = async (req, res) => {
             },
         });
 
-        console.log(foundChat);
         if (foundChat) {
             return res.status(200).json({
                 success: true,
@@ -23,8 +22,6 @@ const createChat = async (req, res) => {
         const newChat = await ChatsDB.create({
             members: [sender, reciever],
         });
-
-        console.log(newChat);
 
         return res.status(200).json({
             success: true,
@@ -48,7 +45,14 @@ const findChatsOfUser = async (req, res) => {
         // Find all chats where user is member
         const chats = await ChatsDB.find({
             members: { $in: [userId] },
-        });
+        })
+            .populate({
+                path: "members",
+                select: "firstname lastname _id",
+            })
+            .populate({
+                path: "lastMessageId",
+            });
         return res.status(200).json({
             success: true,
             message: "Chats Found",
@@ -72,9 +76,11 @@ const findChatByMembers = async (req, res) => {
             members: {
                 $all: [sender, reciever],
             },
+        }).populate({
+            path: "members",
+            select: "firstname lastname _id",
         });
 
-        console.log(foundChat);
         if (foundChat) {
             return res.status(200).json({
                 success: true,
@@ -82,10 +88,18 @@ const findChatByMembers = async (req, res) => {
                 chat: foundChat,
             });
         } else {
+            // if not found, create a new chat
+            const newChat = await ChatsDB.create({
+                members: [sender, reciever],
+            }).populate({
+                path: "members",
+                select: "firstname lastname _id",
+            });
+
             return res.status(200).json({
-                success: false,
-                message: "Chat does not exist",
-                chat: foundChat,
+                success: true,
+                message: "Chat Created",
+                chat: newChat,
             });
         }
     } catch (e) {
@@ -104,7 +118,6 @@ const findChatById = async (req, res) => {
         // check if chat already exists
         const foundChat = await ChatsDB.findById(chatId);
 
-        console.log(foundChat);
         if (foundChat) {
             return res.status(200).json({
                 success: true,

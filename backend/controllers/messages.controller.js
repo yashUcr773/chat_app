@@ -1,6 +1,7 @@
 const MessagesDB = require("../database/messages.database");
+const ChatsDB = require("../database/chat.database");
 
-const createMessage = async (req,res) => {
+const createMessage = async (req, res) => {
     try {
         const { message, chatId, senderId } = req.body;
 
@@ -9,6 +10,15 @@ const createMessage = async (req,res) => {
             chatId,
             senderId,
         });
+
+        const updatedChat = await ChatsDB.findByIdAndUpdate(
+            chatId,
+            {
+                lastMessageId: createdMessage._id,
+            },
+            { new: true }
+        );
+
 
         return res.status(200).json({
             success: true,
@@ -24,7 +34,7 @@ const createMessage = async (req,res) => {
     }
 };
 
-const getMessages = async (req,res) => {
+const getMessages = async (req, res) => {
     try {
         const { chatId } = req.params;
 
