@@ -13,8 +13,8 @@ export function Signin() {
     const location = useLocation()
     const from = location.state?.from?.pathname || "/"
 
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
+    const [email, setEmail] = useState("user-email-1@gmail.com")
+    const [password, setPassword] = useState("Compro@11")
     const [err, setErr] = useState("")
     const [showLoader, setShowLoader] = useState(false)
     const setCurrentSession = useSetCurrentSession()
@@ -29,12 +29,12 @@ export function Signin() {
         try {
             const response = await customAxios.post(CONSTANTS.AUTH.SIGNIN, { email, password }, { withCredentials: true })
             const { accessToken, ...user } = response.data.user
-            setCurrentSession({ accessToken, userData: user })
+            setCurrentSession({ accessToken, userData: user, socketEvent: ['connect', 'addNewUser'] })
 
             navigate(from, { replace: true })
 
         } catch (e: any) {
-            setCurrentSession({ accessToken: "", userData: defaultUser })
+            setCurrentSession({ accessToken: "", userData: defaultUser, socketEvent: ['disconnect'] })
 
             setErr(e.response.data.message)
             console.log(e)

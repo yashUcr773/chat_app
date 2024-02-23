@@ -52,21 +52,29 @@ mongoose.connection.once("open", () => {
         },
     });
 
+    let onlineUsers = [];
+
     // Define Socket.IO event handlers
     io.on("connection", (socket) => {
-        console.log("A user connected", socket.id);
-
-        // Example: Handle a chat message event
-        socket.on("chat message", (msg) => {
-            console.log("message: " + msg);
-            // Broadcast the message to all connected clients
-            io.emit("chat message", msg);
+        socket.on("addNewUser", (userId) => {
+            let existingUsers = onlineUsers.some(
+                (user) => user.userId === userId
+            );
+            if (!existingUsers) {
+                onlineUsers.push({ userId, socketId: socket.id });
+            }
+            io.emit("getOnlineUsers", onlineUsers);
         });
 
-        // Handle disconnection
-        socket.on("disconnect", () => {
-            console.log("User disconnected");
+        socket.on("disconnect", (reason) => {
+            onlineUsers = onlineUsers.filter(
+                (user) => user.socketId != socket.id
+            );
+            io.emit("getOnlineUsers", onlineUsers);
+        });
+
+        socket.on("askForOnlineUsers", () => {
+            io.emit("getOnlineUsers", onlineUsers);
         });
     });
-
 });

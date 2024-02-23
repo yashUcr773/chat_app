@@ -18,9 +18,9 @@ export function useRefreshToken({ sendUserData }: any) {
     const refresh = async () => {
         const response = await customAxios.get(baseurl, { withCredentials: true })
         if (sendUserData) {
-            setCurrentSession({ accessToken: response.data.newAccessToken, userData: response.data.user })
+            setCurrentSession({ accessToken: response.data.newAccessToken, userData: response.data.user, socketEvent: ['connect', 'addNewUser'] })
         } else {
-            setCurrentSession({ accessToken: response.data.newAccessToken })
+            setCurrentSession({ accessToken: response.data.newAccessToken, socketEvent: ['connect', 'addNewUser'] })
         }
         setAccessToken(response.data.newAccessToken)
         return response.data.newAccessToken

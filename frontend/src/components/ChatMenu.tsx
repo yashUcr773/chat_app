@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { CONSTANTS } from "../../config/Constants"
+import { CONSTANTS, getSocket } from "../../config/Constants"
 import { useRecoilValue, useSetRecoilState } from "recoil"
 import { userAtom } from "../store/atoms/user"
 import { useAxiosPrivate } from "../hooks/useAxiosPrivate"
@@ -26,11 +26,24 @@ export function ChatMenu() {
 
 function Chat({ chat }: any) {
 
+    const [isOnline, setIsOnline] = useState(false)
     const user = useRecoilValue(userAtom)
-    const setChatters = useSetRecoilState(chatterAtom)
-    const isOnline = Math.random() > 0.5 ? true : false
-
     const friend = chat.members[0]._id == user?.userId ? chat.members[1] : chat.members[0]
+    const setChatters = useSetRecoilState(chatterAtom)
+
+    useEffect(() => {
+        const socket = getSocket()
+
+        socket.on('getOnlineUsers', (onlineUsers: any) => {
+            console.log(onlineUsers)
+            const online = !!onlineUsers.find((users:any) => users.userId ===friend?._id)
+            console.log(friend._id, online, onlineUsers)
+            setIsOnline(!!online)
+        })
+        socket.emit('askForOnlineUsers')
+    }, [])
+
+
 
     function handleClick() {
         setChatters({

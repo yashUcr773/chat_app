@@ -28,7 +28,15 @@ export const CONSTANTS = {
     }
 }
 
-export const socket = io(CONSTANTS.APIBASEURL)
+let socket:any;
+export function getSocket() {
+
+    if (socket == undefined) {
+        socket = io(CONSTANTS.APIBASEURL)
+    }
+    return socket
+}
+
 
 export const customAxios = axios.create({
     baseURL: CONSTANTS.APIBASEURL,

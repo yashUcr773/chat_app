@@ -60,11 +60,11 @@ export function Signup() {
             const response = await customAxios.post(CONSTANTS.AUTH.SIGNUP, { firstname, lastname, email, password }, { withCredentials: true })
 
             const { accessToken, ...user } = response.data.user
-            setCurrentSession({ accessToken, userData: user })
+            setCurrentSession({ accessToken, userData: user, socketEvent: ['connect', 'addNewUser'] })
             navigate('/')
 
         } catch (e: any) {
-            setCurrentSession({ accessToken: "", userData: defaultUser })
+            setCurrentSession({ accessToken: "", userData: defaultUser, socketEvent: ["disconnect"] })
 
             setErr(e.response.data.message)
             console.log(e)

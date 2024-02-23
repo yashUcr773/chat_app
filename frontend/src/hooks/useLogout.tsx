@@ -15,11 +15,11 @@ export function useLogout() {
     async function logout({ toLink }: useLogoutProps) {
         try {
             await customAxios(CONSTANTS.AUTH.LOGOUT, { withCredentials: true })
-            
+
         } catch (e) {
             console.log(e)
         } finally {
-            setSession({ accessToken: "", userData: defaultUser })
+            setSession({ accessToken: "", userData: defaultUser, socketEvent: ['disconnect'] })
             if (toLink) {
                 navigate(toLink)
             } else {
