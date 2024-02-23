@@ -10,6 +10,7 @@ const mongoose = require("mongoose");
 const {
     credentials,
 } = require("./middleware/access-control-credentials.middleware");
+const socketIO = require("socket.io");
 
 // connect to mongodb
 connectDB();
@@ -41,5 +42,31 @@ app.all("*", (req, res) => {
 });
 
 mongoose.connection.once("open", () => {
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    const server = app.listen(PORT, () =>
+        console.log(`Server running on port ${PORT}`)
+    );
+
+    const io = socketIO(server, {
+        cors: {
+            origin: "http://localhost:5173",
+        },
+    });
+
+    // Define Socket.IO event handlers
+    io.on("connection", (socket) => {
+        console.log("A user connected", socket.id);
+
+        // Example: Handle a chat message event
+        socket.on("chat message", (msg) => {
+            console.log("message: " + msg);
+            // Broadcast the message to all connected clients
+            io.emit("chat message", msg);
+        });
+
+        // Handle disconnection
+        socket.on("disconnect", () => {
+            console.log("User disconnected");
+        });
+    });
+
 });
