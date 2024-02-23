@@ -25,13 +25,11 @@ export function useSetCurrentSession() {
 
         const socket = getSocket()
         for (let event of socketEvent) {
-            console.log(event)
             if (event == 'connect') {
                 socket.connect()
             } else if (event == 'disconnect') {
                 socket.disconnect()
             } else if (event == 'addNewUser') {
-                console.log(userData)
                 socket.emit(event, userData?.userId)
             }
         }

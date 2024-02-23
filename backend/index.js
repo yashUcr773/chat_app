@@ -76,5 +76,23 @@ mongoose.connection.once("open", () => {
         socket.on("askForOnlineUsers", () => {
             io.emit("getOnlineUsers", onlineUsers);
         });
+
+        socket.on(
+            "sendMessage",
+            ({ senderId, message, receiverId, chatId }) => {
+                console.log("message recieved");
+                console.log({ senderId, message, receiverId, chatId });
+
+                const receiver = onlineUsers.filter(
+                    (users) => users.userId === receiverId
+                );
+                if (receiver.length == 0) return;
+
+                console.log("socketId,", receiver[0].socketId);
+                console.log("receiverId,", receiverId);
+                console.log(onlineUsers);
+                io.to(receiver[0].socketId).emit("getMessage", message);
+            }
+        );
     });
 });

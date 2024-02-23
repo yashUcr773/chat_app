@@ -35,12 +35,13 @@ function Chat({ chat }: any) {
         const socket = getSocket()
 
         socket.on('getOnlineUsers', (onlineUsers: any) => {
-            console.log(onlineUsers)
             const online = !!onlineUsers.find((users:any) => users.userId ===friend?._id)
-            console.log(friend._id, online, onlineUsers)
             setIsOnline(!!online)
         })
         socket.emit('askForOnlineUsers')
+        return () => {
+            socket.off('getOnlineUsers')
+        }
     }, [])
 
 

@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { useAxiosPrivate } from "../hooks/useAxiosPrivate";
-import { CONSTANTS } from "../../config/Constants";
-import { useRecoilValue } from "recoil";
+import { CONSTANTS, getSocket } from "../../config/Constants";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { chatterAtom } from "../store/atoms/chatAtoms";
 import { userAtom } from "../store/atoms/user";
+import { messagesAtom } from "../store/atoms/messagesAtom";
 
 export function ChatBox() {
 
     const chatters = useRecoilValue(chatterAtom)
     const customAxios = useAxiosPrivate()
-    const [messages, setMessages] = useState([])
+    const [messages, setMessages] = useRecoilState(messagesAtom)
     const user = useRecoilValue(userAtom)
     const [friend, setFriend] = useState({} as any)
     const [text, setText] = useState('')
@@ -28,18 +29,34 @@ export function ChatBox() {
         }
 
         chatters.sender != "" && getAndSetMessages()
+
+        const socket = getSocket()
+        socket.on('getMessage', (message:any) => {
+            setMessages((prev:any) => [...prev, message])
+        })
+
         return () => {
             setFriend({})
+            socket.off('getMessage')
         }
     }, [chatters])
 
 
-    async function handleClick() {
-        const response = await customAxios.post("http://localhost:3000" + CONSTANTS.MESSAGE.CREATE_MESSAGE, {
-            message: text, chatId: chat._id, senderId: user?.userId
-        })
-        console.log(response)
-        setText("")
+    async function sendMessage() {
+        try {
+
+            const response = await customAxios.post(CONSTANTS.MESSAGE.CREATE_MESSAGE, {
+                message: text, chatId: chat._id, senderId: user?.userId
+            })
+
+            setMessages((prev: any) => [...prev, response.data.createdMessage])
+            setText("")
+
+            const socket = getSocket()
+            socket.emit('sendMessage', { senderId: user?.userId, message: response.data.createdMessage, receiverId: friend._id, chatId: chat._id })
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     return <div className="flex-grow h-full">
@@ -58,7 +75,7 @@ export function ChatBox() {
                 </div>
                 <div className="box-footer h-20 gap-4 flex flex-row p-2 py-4">
                     <input className="w-full p-4 bg-gray-100 rounded-lg" placeholder="Enter Message" value={text} onChange={(e) => setText(e.target.value)}></input>
-                    <button className="px-4 py-2 bg-black text-white rounded-md" onClick={handleClick}>Send</button>
+                    <button className="px-4 py-2 bg-black text-white rounded-md" onClick={sendMessage}>Send</button>
                 </div>
 
             </div>
@@ -70,7 +87,7 @@ export function ChatBox() {
 
 function Message({ message, complete }: any) {
     const user = useRecoilValue(userAtom)
-    const sent = complete.senderId == user?.userId
+    const sent = complete.senderId !== user?.userId
 
     return <span className={`p-2 mx-2 border border-black w-fit rounded-md ${sent ? "self-start" : "self-end"} ${sent ? "bg-green-200" : "bg-blue-200"}`}>{message}</span>
 }
