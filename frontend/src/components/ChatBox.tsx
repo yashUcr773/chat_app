@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAxiosPrivate } from "../hooks/useAxiosPrivate";
 import { CONSTANTS, getSocket } from "../../config/Constants";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -15,6 +15,12 @@ export function ChatBox() {
     const [friend, setFriend] = useState({} as any)
     const [text, setText] = useState('')
     const [chat, setChat] = useState({} as any)
+    const messagesEndRef = useRef(undefined as any);
+
+    const scrollToBottom = () => {
+        messagesEndRef && messagesEndRef?.current?.scrollIntoView({ behavior: "smooth", block:"nearest" });
+      };
+      useEffect(scrollToBottom, [messages]);
 
     useEffect(() => {
         const getAndSetMessages = async () => {
@@ -31,8 +37,8 @@ export function ChatBox() {
         chatters.sender != "" && getAndSetMessages()
 
         const socket = getSocket()
-        socket.on('getMessage', (message:any) => {
-            setMessages((prev:any) => [...prev, message])
+        socket.on('getMessage', (message: any) => {
+            setMessages((prev: any) => [...prev, message])
         })
 
         return () => {
@@ -63,15 +69,18 @@ export function ChatBox() {
         {friend.firstname ?
             <div className="w-full h-full chat-box flex flex-col">
 
-                <div className="box-header flex flex-row gap-4 items-center justify-start p-4 border-b-2 border-black h-20">
+                <div className="box-header flex flex-row gap-4 items-center justify-start p-4 border-b-8 border-green-500 h-20">
                     <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
                         <svg className="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
                     </div>
                     <span>{friend.firstname} {friend.lastname}</span>
                 </div>
 
-                <div className="box-body flex-grow flex flex-col p-2 border-b-4 border-black justify-end">
-                    {messages.map((message: any) => { return <Message key={message._id} message={message.message} complete={message}></Message> })}
+                <div className="box-body flex-grow flex flex-col p-2 border-b-4  justify-end border-2 border-red-500 overflow-y-auto h-60">
+                    <div className="flex flex-col overflow-auto">
+                        {messages.map((message: any) => { return <Message key={message._id} message={message.message} complete={message}></Message> })}
+                        <div ref={messagesEndRef} />
+                    </div>
                 </div>
                 <div className="box-footer h-20 gap-4 flex flex-row p-2 py-4">
                     <input className="w-full p-4 bg-gray-100 rounded-lg" placeholder="Enter Message" value={text} onChange={(e) => setText(e.target.value)}></input>
