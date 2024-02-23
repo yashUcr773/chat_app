@@ -4,6 +4,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil"
 import { userAtom } from "../store/atoms/user"
 import { useAxiosPrivate } from "../hooks/useAxiosPrivate"
 import { chatterAtom } from "../store/atoms/chatAtoms"
+import { notificationsAtom } from "../store/atoms/notificationsAtom"
 
 export function ChatMenu() {
 
@@ -30,12 +31,13 @@ function Chat({ chat }: any) {
     const user = useRecoilValue(userAtom)
     const friend = chat.members[0]._id == user?.userId ? chat.members[1] : chat.members[0]
     const setChatters = useSetRecoilState(chatterAtom)
+    const notifications = useRecoilValue(notificationsAtom)
 
     useEffect(() => {
         const socket = getSocket()
 
         socket.on('getOnlineUsers', (onlineUsers: any) => {
-            const online = !!onlineUsers.find((users:any) => users.userId ===friend?._id)
+            const online = !!onlineUsers.find((users: any) => users.userId === friend?._id)
             setIsOnline(!!online)
         })
         socket.emit('askForOnlineUsers')
@@ -45,8 +47,7 @@ function Chat({ chat }: any) {
     }, [])
 
 
-
-    function handleClick() {
+    function openChat() {
         setChatters({
             sender: user?.userId || "",
             reciever: friend._id
@@ -74,8 +75,18 @@ function Chat({ chat }: any) {
         }
     }
 
+    function getNotificationsCount() {
+        return notifications && notifications.reduce((prev: number, curr: any) => {
+            if (curr?.isRead === false && curr?.chatId == chat._id) {
+                return prev + 1
+            }
+            return prev
+
+        }, 0) || 0
+    }
+
     return (
-        <div className="flex items-center  p-4 rounded-md cursor-pointer bg-slate-700 hover:bg-slate-400 relative" onClick={handleClick}>
+        <div className="flex items-center gap-2 p-4 rounded-md cursor-pointer bg-slate-700 hover:bg-slate-400 relative" onClick={openChat}>
             <div className={`absolute size-2 bg-green-500 rounded-full z-1 right-2 top-2 ${isOnline ? "block" : "hidden"}`}></div>
             <div className="flex-shrink-0 z-1">
                 <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
@@ -90,10 +101,12 @@ function Chat({ chat }: any) {
                     {chat?.lastMessageId?.message || ""}
                 </p>
             </div>
-            <div className="inline-flex gap-2 flex-col items-center text-base font-semibold text-gray-900 dark:text-white">
+            <div className=" ml-2 inline-flex gap-2 flex-col items-center text-base font-semibold text-gray-900 dark:text-white">
                 <span>
                     {formatDate(chat?.lastMessageId?.createdAt) || ""}
                 </span>
+                <div className={` inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-green-500 rounded-full -top-2 -end-2 dark:border-gray-900 ${getNotificationsCount() ? 'block' : 'hidden'}`}>{getNotificationsCount()}</div>
+
             </div>
 
         </div>

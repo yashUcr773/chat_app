@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useAxiosPrivate } from "../hooks/useAxiosPrivate";
 import { CONSTANTS, getSocket } from "../../config/Constants";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { chatterAtom } from "../store/atoms/chatAtoms";
 import { userAtom } from "../store/atoms/user";
 import { messagesAtom } from "../store/atoms/messagesAtom";
+import { notificationsAtom } from "../store/atoms/notificationsAtom";
 
 export function ChatBox() {
 
@@ -16,19 +17,36 @@ export function ChatBox() {
     const [text, setText] = useState('')
     const [chat, setChat] = useState({} as any)
     const messagesEndRef = useRef(undefined as any);
+    const setNotifications = useSetRecoilState(notificationsAtom)
 
     const scrollToBottom = () => {
-        messagesEndRef && messagesEndRef?.current?.scrollIntoView({ behavior: "smooth", block:"nearest" });
-      };
-      useEffect(scrollToBottom, [messages]);
+        messagesEndRef && messagesEndRef?.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    };
+    useEffect(scrollToBottom, [messages]);
 
     useEffect(() => {
         const getAndSetMessages = async () => {
             const chatResponse = await customAxios(CONSTANTS.CHAT.FIND_CHAT_BY_MEMBERS(chatters.sender, chatters.reciever))
             setChat(chatResponse.data.chat)
+            console.log('opened chat', chatResponse.data.chat)
 
             let temp_friend = chatResponse.data.chat.members[0]._id == user?.userId ? chatResponse.data.chat.members[1] : chatResponse.data.chat.members[0]
             setFriend(temp_friend)
+
+            setNotifications((prev: any) => {
+
+                console.log('prev', JSON.parse(JSON.stringify(prev)))
+                const updatedNotifications = prev.map((noti: any) => {
+                    console.log(noti?.chatId, chatResponse.data.chat._id, noti?.chatId === chatResponse.data.chat._id)
+                    if (noti?.chatId === chatResponse.data.chat._id) {
+                        return { ...noti, isRead: true };
+                    }
+                    return {...noti}
+                })
+                console.log('updatedNotifications', JSON.parse(JSON.stringify(updatedNotifications)))
+
+                return updatedNotifications
+            })
 
             const messagesResponse = await customAxios(CONSTANTS.MESSAGE.GET_MESSAGESOF_CHAT(chatResponse.data.chat._id))
             setMessages(messagesResponse.data.messages)

@@ -87,6 +87,12 @@ mongoose.connection.once("open", () => {
                 if (receiver.length == 0) return;
 
                 io.to(receiver[0].socketId).emit("getMessage", message);
+                io.to(receiver[0].socketId).emit("getNotifications", {
+                    senderId,
+                    chatId,
+                    isRead: false,
+                    date: new Date(),
+                });
             }
         );
     });
