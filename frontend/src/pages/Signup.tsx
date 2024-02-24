@@ -1,61 +1,53 @@
 import { useEffect, useState } from "react";
-import { Info } from "../assets/Info";
 import { CONSTANTS } from "../../config/Constants"
-import { Correct } from "../assets/Correct";
-import { Incorrect } from "../assets/Incorrect";
 import { Loader } from "../components/Loader";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { customAxios } from "../../config/Constants";
 import { useSetCurrentSession } from "../hooks/useSetCurrentSession";
 import { defaultUser } from "../../config/defaults";
-import { Section } from "../wrappers/Section";
 
 export function Signup() {
 
     const [email, setEmail] = useState("")
-    const [validName, setValidName] = useState(false)
-
     const [firstname, setFirstname] = useState("")
     const [lastname, setLastname] = useState("")
-
     const [password, setPassword] = useState("")
-    const [validPassword, setValidPassword] = useState(false)
-
     const [confirmPWD, setConfirmPWD] = useState("")
-    const [validconfirmPWD, setValidconfirmPWD] = useState(false)
+
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
     const [err, setErr] = useState("")
     const [showLoader, setShowLoader] = useState(false)
 
     const navigate = useNavigate()
+
     const setCurrentSession = useSetCurrentSession()
 
-    useEffect(() => {
-        setErr("")
-        setValidName(CONSTANTS.EMAIL_REGEX.test(email));
-    }, [email])
+    localStorage.setItem('persistence', JSON.stringify(false))
+
 
     useEffect(() => {
         setErr("")
-        setValidPassword(CONSTANTS.PWD_REGEX.test(password));
-        setValidconfirmPWD(password == confirmPWD)
-    }, [password, confirmPWD])
+    }, [email, password, confirmPWD])
+
 
     async function handleSubmit(e: any) {
         e.preventDefault()
         if (!CONSTANTS.EMAIL_REGEX.test(email)) {
-            setErr('Email does not match format')
-            return setValidName(CONSTANTS.EMAIL_REGEX.test(email));
+            setErr('Please enter a valid email address.')
+            return
         }
         if (!CONSTANTS.PWD_REGEX.test(password)) {
-            setErr('Password does not match format')
-            return setValidPassword(CONSTANTS.PWD_REGEX.test(password));
+            setErr(`Please choose a stronger password. Try a mix of letters, numbers, and symbols upto 24 characters.`)
+            return
         }
         if (password != confirmPWD) {
-            setErr('Passwords do not match')
-            return setValidconfirmPWD(password == confirmPWD)
+            setErr('Passwords do not match.')
+            return
         }
         setShowLoader(true)
+
         try {
             const response = await customAxios.post(CONSTANTS.AUTH.SIGNUP, { firstname, lastname, email, password }, { withCredentials: true })
 
@@ -74,120 +66,120 @@ export function Signup() {
         }
     }
 
-    return <Section className="signup-form gap-2 p-8 rounded-lg w-full sm:w-[500px]">
-        <div className="form-header">
-            <h1 className="text-3xl font-bold">Sign up</h1>
-        </div>
-        <div className="form-body w-full">
-            <form onSubmit={handleSubmit} className="flex flex-col items-center">
-                <div className="form-input w-full flex flex-row items-center justify-between gap-4">
-                    <div className="form-input w-full">
-                        <label htmlFor="firstname" className="flex flex-row gap-2 items-center justify-start h-full my-2 font-semibold">
-                            Firstname:
-                        </label>
-                        <input
-                            className="p-4 bg-gray-100 font-normal rounded-md w-full"
-                            type="text"
-                            id="firstname"
-                            autoComplete="off"
-                            onChange={(e) => setFirstname(e.target.value)}
-                            value={firstname}
-                            required
-                            placeholder="Enter Firstname"
-                        ></input>
+    return (
+        <section className="bg-gray-50 dark:bg-gray-900">
+            <div className="flex flex-col gap-4 items-center justify-start mt-8 px-6 py-8 mx-auto md:h-screen lg:py-0">
+                <div className="bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-lg xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+                    <div className="p-6 space-y-4 md:space-y-6 sm:p-8 border border-primary-500 rounded-lg">
+                        <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                            Create an account
+                        </h1>
+                        <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
+                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
+                                <div className="w-full">
+                                    <label htmlFor="firstname"
+                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Firstname</label>
+                                    <input type="text" name="firstname" id="firstname" onChange={(e) => setFirstname(e.target.value)}
+                                        value={firstname}
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="John" required />
+                                </div>
+                                <div className="w-full">
+                                    <label htmlFor="lastname"
+                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Lastname</label>
+                                    <input type="text" name="lastname" id="lastname" onChange={(e) => setLastname(e.target.value)}
+                                        value={lastname}
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="Doe" required />
+                                </div>
+                            </div>
+                            <div>
+                                <label htmlFor="email"
+                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
+                                <input type="email" name="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    placeholder="johndoe@company.com" required />
+                            </div>
+                            <div>
+                                <label htmlFor="password"
+                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                                <div className="relative">
+
+                                    <input type={showPassword ? "text" : "password"} name="password" id="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)}
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        required />
+                                    <div className="absolute w-12 top-0 right-0 px-2 h-full flex flex-col items-center justify-center">
+                                        {
+                                            !showPassword ?
+                                                <svg className="h-6 text-gray-700" fill="none" onClick={() => setShowPassword(true)}
+                                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                                    <path fill="currentColor"
+                                                        d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z">
+                                                    </path>
+                                                </svg> :
+                                                <svg className="h-6 text-gray-700" fill="none" onClick={() => setShowPassword(false)}
+                                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                                                    <path fill="currentColor"
+                                                        d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z">
+                                                    </path>
+                                                </svg>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label htmlFor="confirm-password"
+                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
+                                <div className="relative">
+
+                                    <input type={showConfirmPassword ? "text" : "password"} name="confirm-password" id="confirm-password" placeholder="••••••••" value={confirmPWD} onChange={(e) => setConfirmPWD(e.target.value)}
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        required />
+                                    <div className="absolute w-12 top-0 right-0 px-2 h-full flex flex-col items-center justify-center">
+                                        {
+                                            !showConfirmPassword ?
+                                                <svg className="h-6 text-gray-700" fill="none" onClick={() => setShowConfirmPassword(true)}
+                                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                                    <path fill="currentColor"
+                                                        d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z">
+                                                    </path>
+                                                </svg> :
+                                                <svg className="h-6 text-gray-700" fill="none" onClick={() => setShowConfirmPassword(false)}
+                                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                                                    <path fill="currentColor"
+                                                        d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z">
+                                                    </path>
+                                                </svg>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <p className={`rounded-lg w-full text-left text-sm font-normal text-red-600 whitespace-break-spaces`}>{err}</p>
+                            <button type="submit"
+                                className="flex flex-row items-center justify-center gap-4 w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                                Create an account {showLoader ? <Loader fullPage={false} /> : null}
+                            </button>
+                            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                                Already have an account? <Link to="/signin" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Login here</Link>
+                            </p>
+                        </form>
                     </div>
-                    <div className="form-input w-full">
-                        <label htmlFor="lastname" className="flex flex-row gap-2 items-center justify-start h-full my-2 font-semibold">
-                            Lastname:
-                        </label>
-                        <input
-                            className="p-4 bg-gray-100 font-normal rounded-md w-full"
-                            type="text"
-                            id="lastname"
-                            autoComplete="off"
-                            onChange={(e) => setLastname(e.target.value)}
-                            value={lastname}
-                            required
-                            placeholder="Enter Lastname"
-                        ></input>
-                    </div>
                 </div>
-                <div className="form-input w-full">
+            </div>
+        </section>
 
-                    <label htmlFor="email" className="flex flex-row gap-2 items-center justify-start h-full my-2 font-semibold">
-                        Email:
-                        {!email ? "" : !validName ? <Incorrect color={'red'} /> : <Correct color={'green'} />}
-                    </label>
-                    <input
-                        className="p-4 bg-gray-100 font-normal rounded-md w-full"
-                        type="text"
-                        id="email"
-                        autoComplete="off"
-                        onChange={(e) => setEmail(e.target.value)}
-                        value={email}
-                        required
-                        aria-invalid={validName ? "false" : "true"}
-                        aria-describedby="uidnote"
-                        placeholder="Enter email"
-                    ></input>
-                    <p id="uidnote" className={`${email && !validName ? 'block' : 'hidden'} border border-black my-2 bg-gray-800 text-sm font-normal p-4 rounded-lg text-white`}>
-                        <Info />
-                        Incorrect Format
-                    </p>
-                </div>
-                <div className="form-input w-full">
 
-                    <label htmlFor="password" className="flex flex-row gap-2 items-center justify-start h-full my-2 font-semibold">
-                        Password:
-                        {!password ? "" : !validPassword ? <Incorrect color={'red'} /> : <Correct color={'green'} />}
-                    </label>
-                    <input
-                        className="p-4 bg-gray-100 font-normal rounded-md w-full"
-                        type="password"
-                        id="password"
-                        onChange={(e) => setPassword(e.target.value)}
-                        value={password}
-                        required
-                        aria-invalid={validPassword ? "false" : "true"}
-                        aria-describedby="pwdnote"
-                        placeholder="Enter password"
-                    ></input>
-                    <p id="pwdnote" className={`${password && !validPassword ? 'block' : 'hidden'} border border-black my-2 bg-gray-800 text-sm font-normal p-4 rounded-lg text-white`}>
-                        <Info />
-                        8 to 24 characters.
-                        Must include uppercase and lowercase letters, a number and a special character.
-                        Allowed special characters: <span aria-label="exclamation mark">!</span> <span aria-label="at symbol">@</span> <span aria-label="hashtag">#</span> <span aria-label="dollar sign">$</span> <span aria-label="percent">%</span>
-                    </p>
-                </div>
-                <div className="form-input w-full">
 
-                    <label htmlFor="confirmPWD" className="flex flex-row gap-2 items-center justify-start h-full my-2 font-semibold">
-                        Confirm Password:
-                        {!confirmPWD ? "" : !validconfirmPWD ? <Incorrect color={'red'} /> : <Correct color={'green'} />}
-                    </label>
-                    <input
-                        className="p-4 bg-gray-100 font-normal rounded-md w-full"
-                        type="password"
-                        id="confirmPWD"
-                        onChange={(e) => setConfirmPWD(e.target.value)}
-                        value={confirmPWD}
-                        required
-                        aria-invalid={validconfirmPWD ? "false" : "true"}
-                        aria-describedby="confirmpwdnote"
-                        placeholder="Enter password again"
-                    ></input>
-                    <p id="confirmpwdnote" className={`${confirmPWD && !validconfirmPWD ? 'block' : 'hidden'} border border-black my-2 bg-gray-800 text-sm font-normal p-4 rounded-lg text-white`}>
-                        <Info />
-                        Must match the first password input field.
-                    </p>
-                </div>
-                <p className={`${err ? "bg-red-400" : ""} rounded-lg text-white test-lg font-semibold mt-4 p-2 w-full text-center`}>{err}</p>
-                <button className="border border-black p-4 rounded-xl bg-black text-white w-48 mt-4 flex flex-row items-center justify-center gap-4">Sign up {showLoader ? <Loader fullPage={false} /> : ""}</button>
-            </form>
 
-        </div>
-        <div className="form-footer mt-2">
-            <span>Already registered? <span onClick={() => { navigate('/signin') }} className="underline cursor-pointer font-semibold">Sign in</span></span>
-        </div>
-    </Section>
+    )
 }
+// TODO: Add a side bar in signup
+{/* <div className="flex flex-col items-center text-center gap-4 w-full rounded-lg  dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+                    <div className="flex flex-row items-end gap-2">
+                        <a className="flex items-center mb-0 space-x-3">
+                            <span className="self-center text-3xl font-semibold whitespace-nowrap text-primary-500">SwiftChat.</span>
+                        </a>
+                        <span className="title">Connect Instantly</span>
+                    </div>
+                    <span className="message text-lg hidden md:block">At SwiftChat, we believe in the power of instant communication. Stay connected with friends, family, and colleagues effortlessly, no matter where they are. Our platform is designed for speed, reliability, and simplicity, ensuring that your messages are delivered swiftly and securely every time. Experience seamless conversations with SwiftChat.</span>
+                </div> */}

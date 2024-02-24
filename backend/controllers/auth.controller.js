@@ -26,7 +26,7 @@ const handleLogin = async (req, res) => {
         if (!success) {
             res.cookie("jwt", "", tokenCookieOptions);
             return res.status(400).json({
-                message: "email and password are required.",
+                message: "Email and password are required.",
                 success: false,
                 error: error.issues,
             });
@@ -40,7 +40,7 @@ const handleLogin = async (req, res) => {
             res.cookie("jwt", "", tokenCookieOptions);
             return res.status(401).json({
                 success: false,
-                message: "email or password incorrect",
+                message: "Email or password incorrect.",
             });
         }
 
@@ -50,7 +50,7 @@ const handleLogin = async (req, res) => {
             res.cookie("jwt", "", tokenCookieOptions);
             return res.status(401).json({
                 success: false,
-                message: "email or password incorrect",
+                message: "Email or password incorrect.",
             });
         }
 
@@ -103,7 +103,7 @@ const handleLogout = async (req, res) => {
         if (!cookies?.jwt) {
             return res.status(200).json({
                 success: true,
-                message: "Log out successful",
+                message: "Log out successful.",
             });
         }
 
@@ -123,7 +123,7 @@ const handleLogout = async (req, res) => {
             res.clearCookie("jwt", tokenCookieOptions);
             return res.status(200).json({
                 success: true,
-                message: "Log out successful",
+                message: "Log out successful.",
             });
         }
 
@@ -169,7 +169,7 @@ const handleSignup = async (req, res) => {
 
         if (!success) {
             return res.status(400).json({
-                message: "email and password are required.",
+                message: "Email and password are required.",
                 success: false,
                 error: error.issues,
             });
@@ -216,7 +216,7 @@ const handleSignup = async (req, res) => {
         res.cookie("jwt", refreshToken, tokenCookieOptions);
         res.status(201).json({
             success: true,
-            message: "User Created Successfully",
+            message: "User Created Successfully.",
             user: {
                 userId: updatedUser._id,
                 email: updatedUser.email,

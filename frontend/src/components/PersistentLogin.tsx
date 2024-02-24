@@ -20,7 +20,14 @@ export function PersistentLogin() {
                 setIsLoading(false)
             }
         }
-        !accessToken ? verifyRefreshToken() : setIsLoading(false)
+
+        const persistence = JSON.parse(localStorage.getItem('persistence') || "") || false
+
+        if (!persistence) {
+            setIsLoading(false)
+        } else {
+            !accessToken ? verifyRefreshToken() : setIsLoading(false)
+        }
     }, [])
 
     return isLoading ? <Loader fullPage={true} /> : <Outlet />

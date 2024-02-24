@@ -2,12 +2,11 @@ import { Route, Routes } from "react-router-dom";
 import { Signin } from "./Signin";
 import { Signup } from "./Signup";
 import { Layout } from "./Layout";
-import { Unauthorized } from "./Unauthorized";
 import { Dashboard } from "./Dashboard";
-import { Missing } from "./Missing";
 import { RequireAuth } from "../components/RequireAuth";
 import { PersistentLogin } from "../components/PersistentLogin";
-import { IsLoggedIn } from "../components/IsLoggedIn";
+import { IsLoggedInComponent } from "../components/IsLoggedInComponent";
+import { NotFound } from "./NotFound";
 
 export function Main() {
     return (
@@ -15,11 +14,10 @@ export function Main() {
             <Route path="/" element={<Layout />}>
 
                 {/* public routes */}
-                <Route element={<IsLoggedIn />}>
+                <Route element={<IsLoggedInComponent />}>
                     <Route path='signin' element={<Signin />}></Route>
                     <Route path='signup' element={<Signup />}></Route>
                 </Route>
-                <Route path='unauthorized' element={<Unauthorized />}></Route>
 
                 {/* Protected */}
                 <Route element={<PersistentLogin />}>
@@ -29,7 +27,7 @@ export function Main() {
                     </Route>
                 </Route>
                 {/* Catch All */}
-                <Route path='*' element={<Missing />}></Route>
+                <Route path='*' element={<NotFound />}></Route>
 
             </Route>
         </Routes >

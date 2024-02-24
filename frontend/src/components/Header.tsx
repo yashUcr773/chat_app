@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { useRecoilState, useRecoilValue } from "recoil"
 import { accessTokenAtom } from "../store/atoms/authAtom"
 import { useLogout } from "../hooks/useLogout"
@@ -9,7 +9,6 @@ import { getSocket } from "../../config/Constants"
 
 export function Header() {
 
-    const navigate = useNavigate()
     const accessToken = useRecoilValue(accessTokenAtom)
     const logout = useLogout()
     const user = useRecoilValue(userAtom)
@@ -41,28 +40,44 @@ export function Header() {
         await logout({})
     }
 
-    return <header className="bg-gray-200 border border-black h-24 flex flex-row items-center justify-between p-8">
-        <span onClick={() => navigate('/dashboard')} className="text-xl font-semibold cursor-pointer">Logo</span>
-        {user?.firstname ? <span>Logged in as {user.firstname}</span> : null}
-        <nav className="flex flex-row gap-4">
-            {
-                !accessToken ?
-                    <>
-                        <button onClick={() => navigate('/signin')} className="border border-black p-2 px-4 rounded-lg">Signin</button>
-                        <button onClick={() => navigate('/signup')} className="bg-black text-white p-2 px-4 rounded-lg">Signup</button>
-                    </> :
-                    <>
-                        <button type="button" className="relative inline-flex items-center p-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                            <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 16">
-                                <path d="m10.036 8.278 9.258-7.79A1.979 1.979 0 0 0 18 0H2A1.987 1.987 0 0 0 .641.541l9.395 7.737Z" />
-                                <path d="M11.241 9.817c-.36.275-.801.425-1.255.427-.428 0-.845-.138-1.187-.395L0 2.6V14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2.5l-8.759 7.317Z" />
-                            </svg>
-                            <span className="sr-only">Notifications</span>
-                            <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">{getNotificationsCount()}</div>
-                        </button>
-                        <button onClick={() => handleLogout()} className="bg-black text-white p-2 px-4 rounded-lg">Logout</button>
-                    </>
-            }
-        </nav>
-    </header>
+    return (
+        <header>
+            <nav className="h-16 flex items-center justify-center">
+                <div className="flex flex-wrap gap-2 justify-between items-center mx-auto w-full">
+
+                    <Link to="/dashboard" className="logo flex items-center">
+                        <span className="self-center text-xl font-semibold whitespace-nowrap text-primary-500">SwiftChat.</span>
+                    </Link>
+
+                    {
+                        !accessToken ?
+                            <div className="flex items-center lg:order-2">
+                                <Link to="/signin"
+                                    className="text-gray-800 dark:text-white hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800">
+                                    Log in</Link>
+                                <Link to="/signup"
+                                    className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                                    Get started</Link>
+                            </div> :
+
+                            <div className="flex items-center lg:order-2">
+                                <button type="button" className="relative text-gray-800 dark:text-white hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm p-2 mr-4 mt-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800">
+                                    <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 16">
+                                        <path d="m10.036 8.278 9.258-7.79A1.979 1.979 0 0 0 18 0H2A1.987 1.987 0 0 0 .641.541l9.395 7.737Z" />
+                                        <path d="M11.241 9.817c-.36.275-.801.425-1.255.427-.428 0-.845-.138-1.187-.395L0 2.6V14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2.5l-8.759 7.317Z" />
+                                    </svg>
+                                    <span className="sr-only">Notifications</span>
+                                    <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-primary-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">{getNotificationsCount()}</div>
+                                </button>
+                                <a onClick={() => handleLogout()}
+                                    className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium cursor-pointer rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                                    Log out</a>
+                            </div>
+                    }
+                </div>
+            </nav>
+        </header>
+    )
 }
+// TODO : ADD LOGIN BANNER
+// {user?.firstname ? <span>Logged in as {user.firstname}</span> : null}

@@ -1,12 +1,13 @@
 import { createPortal } from "react-dom"
 
 interface LoaderProps {
-    fullPage: boolean
+    fullPage?: boolean
+    size?: number
 }
 
 const root: any = document.querySelector('#root')
 
-export function Loader({ fullPage }: LoaderProps) {
+export function Loader({ fullPage = false, size = 4 }: LoaderProps) {
 
     if (fullPage) {
         return createPortal(
@@ -23,8 +24,8 @@ export function Loader({ fullPage }: LoaderProps) {
             root)
     } else {
         return <div
-            className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current 
-            border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+            className={`inline-block animate-spin rounded-full border-solid border-current 
+            border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite] h-${size} w-${size} border-${size/2}`}
             role="status">
             <span
                 className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap 
