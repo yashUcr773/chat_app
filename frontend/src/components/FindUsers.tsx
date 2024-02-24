@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Section } from "../wrappers/Section";
 import { useDebouncer } from "../hooks/useDebouncer";
 import { CONSTANTS } from "../../config/Constants";
 import { useAxiosPrivate } from "../hooks/useAxiosPrivate";
@@ -28,45 +27,52 @@ export function FindUsers() {
     }
 
     return (
-        <Section className="!justify-start !items-start !border-0 !border-b-4 border-slate-900">
-            <label htmlFor="findUsers" className="text-xl font-bold">Find Users</label>
-            <div className="flex flex-row gap-4 w-full items-start">
-                <div className="flex flex-col gap-4 w-full relative">
-                    <input id="findUsers"
-                        value={search}
-                        onChange={handleInputChange}
-                        className="border border-black p-4 w-full bg-gray-200 rounded-xl"
-                        placeholder="Enter Name"
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => setTimeout(() => { setIsFocused(false) }, 100)}
-                    ></input>
-                    {isFocused && users.length ?
-                        <div className="bg-gray-100 z-10 rounded-lg w-full p-4 space-y-2 divide-y-2 text-lg absolute top-16 overflow-y-auto max-h-60">
-                            {users.map((user: any) => currentUser?.userId != user._id ? <User key={user._id} id={user._id} firstname={user.firstname} lastname={user.lastname}></User> : null)}
+        <section className="flex flex-col gap-2 items-start justify-start border-b-2 border-gray-200 dark:border-gray-700 pb-2">
+            <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white w-full text-left">Find Users</span>
+
+            <form className="flex items-center max-w-sm mx-auto w-full relative align-middle justify-center" onSubmit={(e) => { e.preventDefault() }}>
+                <label htmlFor="simple-search" className="sr-only">Search</label>
+                <input type="text" id="simple-search"
+                    className=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Enter Name" required
+                    value={search}
+                    onChange={handleInputChange}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setTimeout(() => { setIsFocused(false) }, 100)}
+                />
+                <svg className="w-4 h-4 absolute top-3 right-2 pointer-events-none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                </svg>
+            </form>
+
+            <div className="w-full relative">
+                {
+                    isFocused && users.length ?
+                        <div id="dropdown" className="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-full dark:bg-gray-700 text-sm text-gray-700 dark:text-gray-200 absolute  max-h-80 overflow-y-auto">
+                            {users.map((user: any) => currentUser?.userId != user._id ? <User key={user._id} user={user}></User> : null)}
                         </div> :
-                        ""}
-                </div>
-                <button className="border border-black p-4 rounded-lg text-white bg-black">Search</button>
+                        ""
+                }
             </div>
-        </Section>
+
+        </section>
     )
 }
 
-function User({ id, firstname, lastname }: any) {
+function User({ user }: any) {
+
     const setChatters = useSetRecoilState(chatterAtom)
-    const user = useRecoilValue(userAtom)
+    const currUser = useRecoilValue(userAtom)
 
     function handleClick() {
         setChatters({
-            sender: user?.userId || "",
-            reciever: id
+            sender: currUser?.userId || "",
+            reciever: user._id
         })
     }
-
     return (
-        <div key={id} className="p-2 hover:bg-red-200 rounded-lg cursor-pointer" onClick={handleClick}>
-            {firstname}, {lastname}
+        <div className="px-4 py-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white whitespace-nowrap overflow-hidden text-ellipsis" onClick={handleClick}>
+            {user.firstname}, {user.lastname} <span className="text-xs text-gray-700 dark:text-white">({user.email})</span>
         </div>
     )
 }
-

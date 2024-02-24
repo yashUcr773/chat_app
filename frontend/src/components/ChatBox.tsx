@@ -28,22 +28,18 @@ export function ChatBox() {
         const getAndSetMessages = async () => {
             const chatResponse = await customAxios(CONSTANTS.CHAT.FIND_CHAT_BY_MEMBERS(chatters.sender, chatters.reciever))
             setChat(chatResponse.data.chat)
-            console.log('opened chat', chatResponse.data.chat)
 
             let temp_friend = chatResponse.data.chat.members[0]._id == user?.userId ? chatResponse.data.chat.members[1] : chatResponse.data.chat.members[0]
             setFriend(temp_friend)
 
             setNotifications((prev: any) => {
 
-                console.log('prev', JSON.parse(JSON.stringify(prev)))
                 const updatedNotifications = prev.map((noti: any) => {
-                    console.log(noti?.chatId, chatResponse.data.chat._id, noti?.chatId === chatResponse.data.chat._id)
                     if (noti?.chatId === chatResponse.data.chat._id) {
                         return { ...noti, isRead: true };
                     }
-                    return {...noti}
+                    return { ...noti }
                 })
-                console.log('updatedNotifications', JSON.parse(JSON.stringify(updatedNotifications)))
 
                 return updatedNotifications
             })
@@ -66,7 +62,8 @@ export function ChatBox() {
     }, [chatters])
 
 
-    async function sendMessage() {
+    async function sendMessage(e: any) {
+        e.preventDefault()
         try {
 
             const response = await customAxios.post(CONSTANTS.MESSAGE.CREATE_MESSAGE, {
@@ -83,30 +80,49 @@ export function ChatBox() {
         }
     }
 
-    return <div className="flex-grow h-full">
+    return <div className="flex-grow h-full bg-white dark:bg-gray-800 rounded-lg ">
         {friend.firstname ?
-            <div className="w-full h-full chat-box flex flex-col">
+            <div className="w-full h-full chat-box flex flex-col ">
 
-                <div className="box-header flex flex-row gap-4 items-center justify-start p-4 border-b-8 border-green-500 h-20">
+                <div className="box-header flex flex-row gap-4 items-center justify-start p-4 border-b-2 border-gray-200 dark:border-gray-700 h-20">
                     <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
                         <svg className="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
                     </div>
                     <span>{friend.firstname} {friend.lastname}</span>
                 </div>
 
-                <div className="box-body flex-grow flex flex-col p-2 border-b-4  justify-end border-2 border-red-500 overflow-y-auto h-60">
+                <div className="box-body flex-grow flex flex-col p-2 justify-end overflow-y-auto min-h-96 h-full">
                     <div className="flex flex-col overflow-auto">
                         {messages.map((message: any) => { return <Message key={message._id} message={message.message} complete={message}></Message> })}
                         <div ref={messagesEndRef} />
                     </div>
                 </div>
-                <div className="box-footer h-20 gap-4 flex flex-row p-2 py-4">
-                    <input className="w-full p-4 bg-gray-100 rounded-lg" placeholder="Enter Message" value={text} onChange={(e) => setText(e.target.value)}></input>
-                    <button className="px-4 py-2 bg-black text-white rounded-md" onClick={sendMessage}>Send</button>
-                </div>
+
+                <form className="flex items-center w-full mx-auto p-4 border-t-2 border-gray-200 dark:border-gray-700 h-20" onSubmit={sendMessage}>
+
+                    <label htmlFor="send-message" className="sr-only">Send Message</label>
+
+                    <input type="text" id="send-message"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        placeholder="Enter Message" required
+                        value={text} onChange={(e) => setText(e.target.value)}
+                    />
+
+                    <button type="submit"
+                        className="inline-flex items-center py-2.5 px-3 ms-2 text-sm font-medium text-white bg-primary-700 rounded-lg border border-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                        Send
+                    </button>
+
+                </form>
+            </div>
+            :
+            <div className="flex items-center justify-center px-6 py-12 mx-auto h-full w-full">
+                <h1
+                    className="mt-3 text-xl font-semibold text-gray-800 dark:text-white md:text-3xl">
+                    Click on a user to open Chat
+                </h1>
 
             </div>
-            : null
         }
     </div>
 
@@ -116,5 +132,11 @@ function Message({ message, complete }: any) {
     const user = useRecoilValue(userAtom)
     const sent = complete.senderId !== user?.userId
 
-    return <span className={`p-2 mx-2 border border-black w-fit rounded-md ${sent ? "self-start" : "self-end"} ${sent ? "bg-green-200" : "bg-blue-200"}`}>{message}</span>
+    if (sent) {
+        return <span className={`bg-primary-100 text-primary-800 text-lg font-medium px-3 py-2 m-0.5 rounded-xl dark:bg-primary-900 dark:text-green-300 self-start`}>{message}</span>
+    } else {
+        return <span className={`bg-blue-100 text-blue-800 text-lg font-medium px-3 py-2 m-0.5 rounded-xl dark:bg-blue-900 dark:text-blue-300 self-end`}>{message}</span>
+    }
+
 }
+

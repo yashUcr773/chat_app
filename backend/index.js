@@ -11,6 +11,7 @@ const {
     credentials,
 } = require("./middleware/access-control-credentials.middleware");
 const socketIO = require("socket.io");
+const { allowedOrigins } = require("./config/allowedOrigins");
 
 // connect to mongodb
 connectDB();
@@ -48,7 +49,7 @@ mongoose.connection.once("open", () => {
 
     const io = socketIO(server, {
         cors: {
-            origin: "http://localhost:5173",
+            origin: allowedOrigins,
         },
     });
 

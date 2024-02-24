@@ -11,6 +11,7 @@ export function ChatMenu() {
     const [chats, setChats] = useState([])
     const user = useRecoilValue(userAtom)
     const customAxiosPrivate = useAxiosPrivate()
+    const [showChats, setShowChats] = useState(true)
 
     useEffect(() => {
         const getAndSetChats = async () => {
@@ -20,14 +21,32 @@ export function ChatMenu() {
         getAndSetChats()
     }, [])
 
-    return <div className="chats-container flex flex-col gap-2 overflow-y-auto">
-        {chats.length ? chats.map((chat: any) => { return <Chat key={chat._id} chat={chat}></Chat> }) : null}
-    </div>
+    return (
+        <section className="flex flex-col gap-2 items-start justify-start">
+            <div className="flex flex-row justify-between items-center w-full">
+                <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white w-full text-left">Active Chats</span>
+                <button onClick={() => setShowChats(prev => !prev)} >
+                    {showChats ?
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                        :
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+                        </svg>
+                    }
+                </button>
+            </div>
+            {showChats && <div className="chats-container flex flex-col gap-1 overflow-y-auto w-full max-h-[60vh] overflow-auto">
+                {chats.length ? chats.map((chat: any) => { return <Chat key={chat._id} chat={chat}></Chat> }) : null}
+            </div>}
+        </section>
+    )
 }
 
 function Chat({ chat }: any) {
 
-    const [isOnline, setIsOnline] = useState(false)
+    const [isOnline, setIsOnline] = useState(true)
     const user = useRecoilValue(userAtom)
     const friend = chat.members[0]._id == user?.userId ? chat.members[1] : chat.members[0]
     const setChatters = useSetRecoilState(chatterAtom)
@@ -86,14 +105,19 @@ function Chat({ chat }: any) {
     }
 
     return (
-        <div className="flex items-center gap-2 p-4 rounded-md cursor-pointer bg-slate-700 hover:bg-slate-400 relative" onClick={openChat}>
-            <div className={`absolute size-2 bg-green-500 rounded-full z-1 right-2 top-2 ${isOnline ? "block" : "hidden"}`}></div>
+        <div
+            className="flex items-center gap-2 p-4 rounded-md cursor-pointer bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-600 dark:bg-gray-700 relative h-24"
+            onClick={openChat}>
+
+            <div className={`absolute size-2 bg-primary-500 rounded-full z-1 right-2 top-2 ${isOnline ? "block" : "hidden"}`}></div>
+
             <div className="flex-shrink-0 z-1">
                 <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
                     <svg className="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
                 </div>
             </div>
-            <div className="flex-1 min-w-0 ms-4">
+
+            <div className="flex-auto min-w-0 ms-4">
                 <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
                     {friend.firstname} {friend.lastname}
                 </p>
@@ -101,14 +125,16 @@ function Chat({ chat }: any) {
                     {chat?.lastMessageId?.message || ""}
                 </p>
             </div>
-            <div className=" ml-2 inline-flex gap-2 flex-col items-center text-base font-semibold text-gray-900 dark:text-white">
-                <span>
+
+            <div className="flex-1 w-fit flex justify-end flex-col items-end gap-2">
+                <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
                     {formatDate(chat?.lastMessageId?.createdAt) || ""}
-                </span>
-                <div className={` inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-green-500 rounded-full -top-2 -end-2 dark:border-gray-900 ${getNotificationsCount() ? 'block' : 'hidden'}`}>{getNotificationsCount()}</div>
 
+                </p>
+                <div className="text-sm text-gray-500 truncate dark:text-gray-400">
+                    <div className={` inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-primary-500 rounded-full -top-2 -end-2 dark:border-gray-900 ${getNotificationsCount() ? 'block' : 'hidden'}`}>{getNotificationsCount()}</div>
+                </div>
             </div>
-
         </div>
 
     )

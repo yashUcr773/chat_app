@@ -7,7 +7,7 @@ export function NotFound() {
 
     return (
         <section>
-            <div className="container flex items-center min-h-screen px-6 py-12 mx-auto">
+            <div className="container flex items-center px-6 py-12 mx-auto">
                 <div>
                     <p
                         className="text-sm font-medium text-primary-500 dark:text-primary-400">

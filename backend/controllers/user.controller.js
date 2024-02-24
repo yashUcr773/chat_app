@@ -54,7 +54,7 @@ async function getUserByFilter(req, res) {
                     { lastname: { $regex: regexFilter } },
                 ],
             },
-            { firstname: 1, lastname: 1, _id: 1 }
+            { firstname: 1, lastname: 1, _id: 1, email:1 }
         );
 
         res.status(200).json({

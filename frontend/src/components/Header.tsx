@@ -66,7 +66,7 @@ export function Header() {
                     <Link to="/dashboard" className="logo flex items-center">
                         <span className="self-center text-xl font-semibold whitespace-nowrap text-primary-500">SwiftChat.</span>
                     </Link>
-                    <div className="flex flex-row gap-2 items-center justify-center">
+                    <div className="flex flex-row gap-2 items-center justify-center ">
                         <button id="theme-toggle" type="button" onClick={toggleTheme}
                             className="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1">
                             <svg id="theme-toggle-dark-icon" className={`size-6 ${!isDarkMode ? '' : 'hidden'}`} fill="currentColor"

@@ -21,12 +21,12 @@ export function PersistentLogin() {
             }
         }
 
-        const persistence = JSON.parse(localStorage.getItem('persistence') || "") || false
+        const persistence = localStorage.getItem('persistence')
 
-        if (!persistence) {
-            setIsLoading(false)
-        } else {
+        if (persistence && persistence == 'true') {
             !accessToken ? verifyRefreshToken() : setIsLoading(false)
+        } else {
+            setIsLoading(false)
         }
     }, [])
 
