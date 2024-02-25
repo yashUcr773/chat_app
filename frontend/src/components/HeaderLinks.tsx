@@ -5,7 +5,7 @@ export function HeaderLinks() {
     }
 
     return <div className="links-container flex flex-row gap-2 sm:gap-4 items-center justify-center">
-        <div title="View Source" onClick={() => { launchLink('https://github.com/yashUcr773/URLShortner') }}>
+        <div title="View Source" onClick={() => { launchLink('https://github.com/yashUcr773/chat_app') }}>
             <svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" strokeWidth="2"
                 className="h-6 w-6 cursor-pointer"
