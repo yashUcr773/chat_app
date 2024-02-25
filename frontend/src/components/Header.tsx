@@ -2,22 +2,25 @@ import { Link } from "react-router-dom"
 import { useRecoilState, useRecoilValue } from "recoil"
 import { accessTokenAtom } from "../store/atoms/authAtom"
 import { useLogout } from "../hooks/useLogout"
-// import { userAtom } from "../store/atoms/user"
+import { userAtom } from "../store/atoms/user"
 import { notificationsAtom } from "../store/atoms/notificationsAtom"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { getSocket } from "../../config/Constants"
 
 export function Header() {
 
     const accessToken = useRecoilValue(accessTokenAtom)
     const logout = useLogout()
-    // const user = useRecoilValue(userAtom)
+    const user = useRecoilValue(userAtom)
     const [notifications, setNotifications] = useRecoilState(notificationsAtom)
     const [isDarkMode, setIsDarkMode] = useState(
         localStorage.getItem('color-theme') === 'dark' ||
-          (!localStorage.getItem('color-theme') &&
+        (!localStorage.getItem('color-theme') &&
             window.matchMedia('(prefers-color-scheme: dark)').matches)
-      );
+    );
+
+    const [showDropdown, setShowDropdown] = useState(false)
+    const dropdownRef = useRef(null as any);
 
     useEffect(() => {
         const socket = getSocket()
@@ -29,7 +32,19 @@ export function Header() {
             socket.off('getNotifications')
         }
     }, [])
+    useEffect(() => {
+        const handleClickOutside = (event: any) => {
+            if (dropdownRef.current && !dropdownRef?.current?.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        };
 
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
     function getNotificationsCount() {
         return notifications && notifications.reduce((prev: number, curr: any) => {
             if (curr?.isRead === false) {
@@ -42,17 +57,17 @@ export function Header() {
 
     useEffect(() => {
         if (isDarkMode) {
-          document.documentElement.classList.add('dark');
-          localStorage.setItem('color-theme', 'dark');
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
         } else {
-          document.documentElement.classList.remove('dark');
-          localStorage.setItem('color-theme', 'light');
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
         }
-      }, [isDarkMode]);
+    }, [isDarkMode]);
 
-      const toggleTheme = () => {
+    const toggleTheme = () => {
         setIsDarkMode((prevIsDarkMode) => !prevIsDarkMode);
-      };
+    };
 
     async function handleLogout() {
         await logout({})
@@ -60,8 +75,8 @@ export function Header() {
 
     return (
         <header>
-            <nav className="h-16 flex items-center justify-center">
-                <div className="flex flex-wrap gap-2 justify-between items-center mx-auto w-full">
+            <nav className="h-fit flex items-center justify-center p-4">
+                <div className="flex flex-col md:flex-row gap-2 justify-between items-center mx-auto w-full">
 
                     <Link to="/dashboard" className="logo flex items-center">
                         <span className="self-center text-xl font-semibold whitespace-nowrap text-primary-500">SwiftChat.</span>
@@ -98,9 +113,55 @@ export function Header() {
                                         <span className="sr-only">Notifications</span>
                                         <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-primary-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">{getNotificationsCount()}</div>
                                     </button>
-                                    <a onClick={() => handleLogout()}
-                                        className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium cursor-pointer rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
-                                        Log out</a>
+
+
+                                    <button
+                                        id="dropdownInformationButton"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setShowDropdown(p => !p);
+                                        }}
+                                        aria-expanded={showDropdown}
+                                        aria-haspopup="true"
+                                        className="relative px-4 py-2 rounded-lg flex flex-row gap-4 items-center justify-center bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-600 dark:bg-gray-700"
+                                        type="button"
+                                    >
+                                        <span className="pointer-events-none">{user && user.firstname}</span>
+                                        <div className="pointer-events-none relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+                                            <svg className="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                        <div
+                                            ref={dropdownRef}
+                                            id="dropdownInformation"
+                                            className={`absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-60 dark:bg-gray-700 dark:divide-gray-600 top-0 right-0 mt-16 ${showDropdown ? 'block' : 'hidden'}`}
+                                            role="menu"
+                                        >
+                                            <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                                                <div className="truncate">{user?.firstname} {user?.lastname}</div>
+                                                <div className="font-medium truncate">{user?.email}</div>
+                                            </div>
+
+                                            <div className="py-2">
+                                                <a
+                                                    href="#"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleLogout();
+                                                    }}
+                                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                                                >
+                                                    Sign out
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </button>
+
+
+
+
+
                                 </div>
                         }
                     </div>
@@ -109,5 +170,3 @@ export function Header() {
         </header>
     )
 }
-// TODO : ADD LOGIN BANNER
-// {user?.firstname ? <span>Logged in as {user.firstname}</span> : null}

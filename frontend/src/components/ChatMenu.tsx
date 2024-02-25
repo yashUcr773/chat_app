@@ -46,7 +46,7 @@ export function ChatMenu() {
 
 function Chat({ chat }: any) {
 
-    const [isOnline, setIsOnline] = useState(true)
+    const [isOnline, setIsOnline] = useState(false)
     const user = useRecoilValue(userAtom)
     const friend = chat.members[0]._id == user?.userId ? chat.members[1] : chat.members[0]
     const setChatters = useSetRecoilState(chatterAtom)
