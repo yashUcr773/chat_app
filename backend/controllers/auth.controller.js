@@ -1,12 +1,12 @@
 const UsersDB = require("../database/user.database");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
 const { tokenCookieOptions } = require("../config/cookieOptions");
 const {
     USER_SIGNUP_VALIDATOR,
     USER_SIGNIN_VALIDATOR,
 } = require("../validations/user.validations");
+const { CONSTANTS } = require("../config/constants.config");
 
 /**
 Takes in email and password from request.
@@ -265,7 +265,7 @@ const handleRefreshToken = async (req, res) => {
         }
 
         // verify if token is correct
-        await jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+        await jwt.verify(refreshToken, CONSTANTS.REFRESH_TOKEN_SECRET);
 
         // generate new tokens
         const [newAccessToken, newRefreshToken] = _generateTokens({
@@ -305,8 +305,8 @@ function _generateTokens({ userId, email }) {
                 email,
             },
         },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+        CONSTANTS.ACCESS_TOKEN_SECRET,
+        { expiresIn: CONSTANTS.ACCESS_TOKEN_EXPIRY }
     );
 
     const refreshToken = jwt.sign(
@@ -316,8 +316,8 @@ function _generateTokens({ userId, email }) {
                 email,
             },
         },
-        process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+        CONSTANTS.REFRESH_TOKEN_SECRET,
+        { expiresIn: CONSTANTS.REFRESH_TOKEN_EXPIRY }
     );
 
     return [accessToken, refreshToken];

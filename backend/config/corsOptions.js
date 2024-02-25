@@ -1,10 +1,10 @@
-require("dotenv").config();
 const { allowedOrigins } = require("./allowedOrigins");
+const { CONSTANTS } = require("./constants.config");
 const corsOptions = {
     origin: (origin, callback) => {
         if (
             allowedOrigins.indexOf(origin) !== -1 ||
-            process.env.ENV == "development"
+            CONSTANTS.ENV == "development"
         ) {
             callback(null, true);
         } else {

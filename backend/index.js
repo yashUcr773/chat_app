@@ -1,9 +1,9 @@
-require("dotenv").config();
+const { CONSTANTS } = require("./config/constants.config");
 const express = require("express");
 const app = express();
 const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
-const PORT = process.env.PORT || 3000;
+const PORT = CONSTANTS.PORT || 3000;
 const cookieParser = require("cookie-parser");
 const connectDB = require("./database/databaseConnection");
 const mongoose = require("mongoose");
@@ -16,9 +16,9 @@ const { allowedOrigins } = require("./config/allowedOrigins");
 // connect to mongodb
 connectDB();
 
-app.get('/', (req, res) => {
-    res.send('App hosted on vercel.')
-})
+app.use("/", (req, res) => {
+    return res.redirect(CONSTANTS.FEURL);
+});
 
 // set allow credentials to true to send cookie
 app.use(credentials);
@@ -43,7 +43,7 @@ app.use("/api/v1/messages", require("./routes/api/v1/messages.routes"));
 
 // global router catcher
 app.all("*", (req, res) => {
-    res.send("Hello World!");
+    return res.redirect(CONSTANTS.NOTFOUND);
 });
 
 mongoose.connection.once("open", () => {
@@ -85,7 +85,6 @@ mongoose.connection.once("open", () => {
         socket.on(
             "sendMessage",
             ({ senderId, message, receiverId, chatId }) => {
-
                 const receiver = onlineUsers.filter(
                     (users) => users.userId === receiverId
                 );

@@ -1,12 +1,12 @@
-const mongoose = require('mongoose')
-require("dotenv").config()
+const mongoose = require("mongoose");
+const { CONSTANTS } = require("../config/constants.config");
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_CONNECTION_STRING)
+        await mongoose.connect(CONSTANTS.MONGO_CONNECTION_STRING);
     } catch (e) {
-        console.log(e)
+        console.log(e);
     }
-}
+};
 
-module.exports = connectDB
+module.exports = connectDB;

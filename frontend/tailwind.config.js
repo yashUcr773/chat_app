@@ -19,6 +19,9 @@ export default {
                     950: "#022c22",
                 },
             },
+            screens: {
+                xs: "475px",
+            },
         },
         fontFamily: {
             body: ["Roboto", "sans-serif"],

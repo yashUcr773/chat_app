@@ -76,9 +76,10 @@ export function Header() {
     return (
         <header>
             <nav className="h-fit flex items-center justify-center p-4">
-                <div className="flex flex-col md:flex-row gap-2 justify-between items-center mx-auto w-full">
+                <div className="flex flex-col xs:flex-row gap-2 justify-between items-center mx-auto w-full">
 
-                    <Link to="/dashboard" className="logo flex items-center">
+                    <Link to="/dashboard" className="logo flex flex-row gap-1 justify-center items-center">
+                        <img src="/logo.png" alt="Logo" className="size-6"/>
                         <span className="self-center text-xl font-semibold whitespace-nowrap text-primary-500">SwiftChat.</span>
                     </Link>
                     <div className="flex flex-row gap-2 items-center justify-center ">
