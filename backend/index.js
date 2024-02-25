@@ -16,6 +16,10 @@ const { allowedOrigins } = require("./config/allowedOrigins");
 // connect to mongodb
 connectDB();
 
+app.get('/', (req, res) => {
+    res.send('App hosted on vercel.')
+})
+
 // set allow credentials to true to send cookie
 app.use(credentials);
 

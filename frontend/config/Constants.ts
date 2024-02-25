@@ -2,9 +2,9 @@ import axios from "axios"
 import { io } from "socket.io-client"
 
 export const CONSTANTS = {
-    EMAIL_REGEX: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+    EMAIL_REGEX: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,64}$/,
     PWD_REGEX: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/,
-    APIBASEURL: "http://192.168.1.77:3000/",
+    APIBASEURL: "https://www.swiftchat.dev/",
     AUTH: {
         SIGNUP: "/auth/signup",
         SIGNIN: "/auth/signin",

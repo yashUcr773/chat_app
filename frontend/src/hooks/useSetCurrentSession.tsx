@@ -1,4 +1,4 @@
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { defaultUserInterface } from "../../config/types";
 import { accessTokenAtom } from "../store/atoms/authAtom";
 import { userAtom } from "../store/atoms/user";
@@ -12,7 +12,7 @@ interface currentSessionProps {
 
 export function useSetCurrentSession() {
 
-    const [user, setUser] = useRecoilState(userAtom)
+    const setUser = useSetRecoilState(userAtom)
     const setAccessToken = useSetRecoilState(accessTokenAtom)
 
     function setCurrentSession({ accessToken, userData, socketEvent }: currentSessionProps) {

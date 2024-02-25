@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 import { useRecoilState, useRecoilValue } from "recoil"
 import { accessTokenAtom } from "../store/atoms/authAtom"
 import { useLogout } from "../hooks/useLogout"
-import { userAtom } from "../store/atoms/user"
+// import { userAtom } from "../store/atoms/user"
 import { notificationsAtom } from "../store/atoms/notificationsAtom"
 import { useEffect, useState } from "react"
 import { getSocket } from "../../config/Constants"
@@ -11,7 +11,7 @@ export function Header() {
 
     const accessToken = useRecoilValue(accessTokenAtom)
     const logout = useLogout()
-    const user = useRecoilValue(userAtom)
+    // const user = useRecoilValue(userAtom)
     const [notifications, setNotifications] = useRecoilState(notificationsAtom)
     const [isDarkMode, setIsDarkMode] = useState(
         localStorage.getItem('color-theme') === 'dark' ||
