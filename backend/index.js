@@ -16,10 +16,6 @@ const { allowedOrigins } = require("./config/allowedOrigins");
 // connect to mongodb
 connectDB();
 
-app.use("/", (req, res) => {
-    return res.redirect(CONSTANTS.FEURL);
-});
-
 // set allow credentials to true to send cookie
 app.use(credentials);
 
@@ -40,6 +36,10 @@ app.use("/auth", require("./routes/auth.routes"));
 app.use("/api/v1/users", require("./routes/api/v1/users.routes"));
 app.use("/api/v1/chats", require("./routes/api/v1/chats.routes"));
 app.use("/api/v1/messages", require("./routes/api/v1/messages.routes"));
+
+app.use("/", (req, res) => {
+    return res.redirect(CONSTANTS.FEURL);
+});
 
 // global router catcher
 app.all("*", (req, res) => {
