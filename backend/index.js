@@ -21,12 +21,12 @@ app.use(credentials);
 
 // Cross-Origin Resource Sharing
 app.use((req, res, next) => {
-    if (req.path === "/") {
-        // Allow all origins for the root path
-        cors()(req, res, next);
-    } else {
+    if (req.path.startsWith("/auth") || req.path.startsWith("/api")) {
         // Use CORS with options for other routes
         cors(corsOptions)(req, res, next);
+    } else {
+        // Allow all origins for the root path
+        cors()(req, res, next);
     }
 });
 
