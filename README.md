@@ -56,3 +56,26 @@ Generate secure access token using `require('crypto').randomBytes(64).toString('
 
 - Tailwind styles inspired from [Flowbite](https://flowbite.com/).
 - Project idea inspired from [Dave Gray](https://www.youtube.com/watch?v=brcHK3P6ChQ&list=PL0Zuz27SZ-6PRCpm9clX0WiBEMB70FWwd).
+
+
+## Planned Features
+- [x] Add signup / signin functionality
+- [x] Connect to DB
+- [x] Implement send and receive messages feature
+- [x] Add sockets for real-time messages
+- [x] Show when a user is online
+- [x] Add notifications
+- [ ] Show notification message instead of just count
+- [ ] Do not show new message when users already is in that chat.
+- [ ] Add group Chat
+- [ ] Message Encryption and decryption
+- [ ] Multimedia support
+- [ ] Add emojis
+- [ ] Edit and delete message
+- [ ] Read Recipts
+- [ ] Time when the message was sent
+- [x] Scroll to new messages
+- [ ] Scroll issue on reopening the chat
+- [ ] Search Functionality for messages
+- [ ] Update info
+- [ ] Add avatars photos
